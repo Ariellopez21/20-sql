@@ -1,0 +1,5 @@
+select b.title, count(bc.status) as availables
+from books b
+left join book_copies bc on b.id = bc.book_id
+where bc.status = 'available'
+group by b.title

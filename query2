@@ -1,0 +1,6 @@
+select distinct b.title, count(*)
+from loans l
+left join book_copies bc on l.book_copy_id = bc.id
+left join books b on b.id = bc.book_id
+group by b.title
+HAVING COUNT(*) > 1;
