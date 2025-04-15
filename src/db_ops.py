@@ -8,13 +8,6 @@ from src.db import Session, engine
 from src.models import Base, User
 
 '''
-1. Consultar por datos de Usuario, por ejemplo, id, nombre, apellido, email.
-2. Consultar por datos completos del Usuario.
-3. Consultar un dato específico del Usuario.
-4. Subir datos de un nuevo usuario.
-5. Modificar datos de un usuario.
-6. Eliminar un usuario.
-
 7. Crear Modelo: books, loans. 
 '''
 
@@ -51,7 +44,7 @@ def get_user(name: list, session) -> User | None:
     else: 
         print("Por favor, ingresar nombre y apellido")
         return None
-
+    
 def get_next_user_id() -> int:
     with Session() as session:
         stmt = select(User).order_by(User.id.desc())
@@ -77,6 +70,25 @@ def add_user(id: int, first_name: str, last_name: str, email: str, phone: str | 
         session.commit()
         print("usuario agregado con id:", new_user.id)
 
+def update_user(first_name: str, last_name: str, email: str | None = None, phone: str | None = None, address: str | None = None, preferences: dict | None = None) -> None:
+    with Session() as session:
+        with session.begin():
+            try: 
+                stmt = (
+                    update(User)
+                    .where(User.first_name == first_name
+                           and User.last_name == last_name)
+                           .values(
+                               email=email,
+                               phone=phone,
+                               address=address,
+                               preferences=preferences
+                           )
+                )
+                session.execute(stmt)
+
+            except NoResultFound:
+                print(f"Usuario de nombre {first_name} {last_name} no encontrado")
 
 def delete_user(first_name: str, last_name: str) -> None:
     with Session() as session:

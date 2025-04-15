@@ -8,8 +8,6 @@ from sqlalchemy.types import JSON
 
 class Base(DeclarativeBase):
     pass
-
-# HACER CLASE AUTHORS, BOOKS, USERS. 
  
 class User(Base):
     __tablename__ = "users"
@@ -22,8 +20,8 @@ class User(Base):
     address: Mapped[Optional[str]] = mapped_column(String(200))
     preferences: Mapped[Optional[dict]] = mapped_column(JSON)
 
-    books: Mapped[list["Book"]] = relationship(back_populates="user")
-    # grupos: Mapped[list["Grupo"]] = relationship(back_populates="usuarios", secondary="usuarios_grupos")
+    #books: Mapped[list["Book"]] = relationship(back_populates="user")
+    loans: Mapped[list["Loan"]] = relationship(back_populates="users")
 
     def __repr__(self) -> str:
         return f"User(id={self.id}, first_name={self.first_name}, last_name={self.last_name}, email={self.email})"
@@ -38,24 +36,30 @@ class Book(Base):
     keywords: Mapped[Optional[list[str]]] = mapped_column(ARRAY(String))
     description: Mapped[Optional[str]] = mapped_column(String(500))
     tsvector: Mapped[Optional[str]] = mapped_column(TSVECTOR)
-    #publication_year: Mapped[date] = mapped_column(ForeignKey("usuarios.id"))
 
-    user: Mapped["User"] = relationship(back_populates="books")
+    loans: Mapped[list["Loan"]] = relationship(back_populates="books")
 
     def __repr__(self) -> str:
         return f"Book(id={self.id}, title={self.title}, publication_year={self.publication_year})"    
-'''
-class Grupo(Base):
-    __tablename__ = "grupos"
+
+
+class Loan(Base):
+    __tablename__ = "loans"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre: Mapped[str]
-    
-    usuarios: Mapped[list["Usuario"]] = relationship(back_populates="grupos", secondary="usuarios_grupos")
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id")) # user_id -> ref. a "users" en clase User.
+    book_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    loan_date: Mapped[date] = mapped_column(default="1973-09-11")
+    due_date: Mapped[date] = mapped_column(default="2020-04-26")
+    return_date: Mapped[Optional[date]] = mapped_column(default=None)
+    #user: Mapped["User"] = relationship(back_populates="loans")
+
+    user: Mapped["User"] = relationship(back_populates="loans")
+    book: Mapped["Book"] = relationship(back_populates="loans")
 
     def __repr__(self) -> str:
-        return f"Grupo(id={self.id},nombre={self.nombre})"
-
+        return f"Loan(id={self.id}, user_id={self.user_id}, loan_date={self.loan_date}, due_date={self.due_date}), return_date={self.return_date})"
+'''
 class UsuarioGrupo(Base):
     __tablename__ = "usuarios_grupos"
 
