@@ -2,3 +2,6 @@
 uv.lock
 pyproject.toml
 src/__pycache__/
+.venv
+migrations/__pycache__
+migrations/versions/__pycache__

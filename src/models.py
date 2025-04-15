@@ -8,10 +8,10 @@ from sqlalchemy.types import JSON
 
 class Base(DeclarativeBase):
     pass
- 
+
 class User(Base):
     __tablename__ = "users"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     last_name: Mapped[str] = mapped_column(String(100))
@@ -19,8 +19,9 @@ class User(Base):
     phone: Mapped[Optional[str]] = mapped_column(String(20))
     address: Mapped[Optional[str]] = mapped_column(String(200))
     preferences: Mapped[Optional[dict]] = mapped_column(JSON)
+    edad: Mapped[Optional[int]]
 
-    #books: Mapped[list["Book"]] = relationship(back_populates="user")
+    books: Mapped[list["Book"]] = relationship(back_populates="user")
     loans: Mapped[list["Loan"]] = relationship(back_populates="users")
 
     def __repr__(self) -> str:
@@ -42,7 +43,6 @@ class Book(Base):
     def __repr__(self) -> str:
         return f"Book(id={self.id}, title={self.title}, publication_year={self.publication_year})"    
 
-
 class Loan(Base):
     __tablename__ = "loans"
 
@@ -52,7 +52,6 @@ class Loan(Base):
     loan_date: Mapped[date] = mapped_column(default="1973-09-11")
     due_date: Mapped[date] = mapped_column(default="2020-04-26")
     return_date: Mapped[Optional[date]] = mapped_column(default=None)
-    #user: Mapped["User"] = relationship(back_populates="loans")
 
     user: Mapped["User"] = relationship(back_populates="loans")
     book: Mapped["Book"] = relationship(back_populates="loans")
